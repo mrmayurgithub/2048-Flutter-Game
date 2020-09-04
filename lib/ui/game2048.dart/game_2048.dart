@@ -17,19 +17,20 @@ class MainGameWidget extends StatefulWidget {
 }
 
 class BoardGridWidget extends StatelessWidget {
-  final _MainGameWidgetState _state;
-  BoardGridWidget(this._state);
+  final _MainGameWidgetState _mainGameWidgetstate;
+  BoardGridWidget(this._mainGameWidgetstate);
   @override
   Widget build(BuildContext context) {
-    Size boardSize = _state.sizeOfBoard();
-    double width = (boardSize.width - (_state.column + 1) * _state.PadCell) /
-        _state.column;
+    Size boardSize = _mainGameWidgetstate.sizeOfBoard();
+    double width = (boardSize.width -
+            (_mainGameWidgetstate.column + 1) * _mainGameWidgetstate.PadCell) /
+        _mainGameWidgetstate.column;
     List<CellBox> _backgroundBox = List<CellBox>();
-    for (int r = 0; r < _state.row; ++r) {
-      for (int c = 0; c < _state.column; ++c) {
+    for (int r = 0; r < _mainGameWidgetstate.row; ++r) {
+      for (int c = 0; c < _mainGameWidgetstate.column; ++c) {
         CellBox box = CellBox(
-          left: c * width + _state.PadCell * (c + 1),
-          top: r * width + _state.PadCell * (r + 1),
+          left: c * width + _mainGameWidgetstate.PadCell * (c + 1),
+          top: r * width + _mainGameWidgetstate.PadCell * (r + 1),
           size: width,
           color: Colors.grey[300],
         );
@@ -40,8 +41,8 @@ class BoardGridWidget extends StatelessWidget {
       left: 0.0,
       top: 0.0,
       child: Container(
-        width: _state.sizeOfBoard().width,
-        height: _state.sizeOfBoard().height,
+        width: _mainGameWidgetstate.sizeOfBoard().width,
+        height: _mainGameWidgetstate.sizeOfBoard().height,
         decoration: BoxDecoration(
           color: Colors.grey,
           borderRadius: BorderRadius.all(Radius.circular(8.0)),
@@ -57,8 +58,7 @@ class BoardGridWidget extends StatelessWidget {
 class _MainGameWidgetState extends State<MainGameWidget> {
   GameLogic _game;
   MediaQueryData _screenSizeQuery;
-  int row = 3;
-  int column = 3;
+  int row = 3, column = 3;
   final double PadCell = 5.0;
   final EdgeInsets _marginOfGame = EdgeInsets.fromLTRB(20.0, 0.0, 20.0, 20.0);
   bool _isDragged = false, _isGameOver = false;
@@ -356,23 +356,19 @@ class CellWidget extends StatefulWidget {
 
 class _CellWidgetState extends State<CellWidget>
     with SingleTickerProviderStateMixin {
-  AnimationController controller;
+  AnimationController _controller;
   Animation<double> _animation;
 
   @override
   initState() {
     super.initState();
-    controller = AnimationController(
-      duration: Duration(
-        milliseconds: 200,
-      ),
-      vsync: this,
-    );
-    _animation = Tween(begin: 0.0, end: 1.0).animate(controller);
+    _controller =
+        AnimationController(duration: Duration(milliseconds: 200), vsync: this);
+    _animation = Tween(begin: 0.0, end: 1.0).animate(_controller);
   }
 
   dispose() {
-    controller.dispose();
+    _controller.dispose();
     super.dispose();
     widget.cell.isNew = false;
   }
@@ -380,11 +376,11 @@ class _CellWidgetState extends State<CellWidget>
   @override
   Widget build(BuildContext context) {
     if (widget.cell.isNew && !widget.cell.isEmpty()) {
-      controller.reset();
-      controller.forward();
+      _controller.reset();
+      _controller.forward();
       widget.cell.isNew = false;
     } else {
-      controller.animateTo(1.0);
+      _controller.animateTo(1.0);
     }
     return AnimatedCell(
       cell: widget.cell,
